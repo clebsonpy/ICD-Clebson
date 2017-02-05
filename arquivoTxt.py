@@ -3,6 +3,7 @@ import collections
 import calendar as ca
 import pandas as pd
 import numpy as np
+from datetime import datetime as dt
 
 def listaTxt(caminho):
 	listaDir = os.listdir(caminho)
@@ -33,25 +34,30 @@ def lerTxt(caminho, codigoArq):
 
 
 def trabaLinhas(listaLinhas):
-    dicVazoes = collections.OrderedDict()
+    dadosVazao = []
     for linha in listaLinhas:
         count = 0
-        vazoes = []
+        listaVazao = []
         for i in linha:
             count += 1
             if count == 3:
-                mes = int(i.split("/")[1])
-                ano = int(i.split("/")[2])
+                dia, mes, ano = (int(x) for x in i.split("/"))
                 dias = ca.monthrange(ano, mes)[1]
-            if count >= 17 and count < 17+dias:
-                if i != '':
-                    vazoes.append(float(i.replace(',','.')))
+                inicio = dt(ano, mes, dia)
+                fim = dt(ano, mes, dias)
+                listaDatas = pd.date_range(inicio, fim)
+                listaCons = [int(linha[1])]*dias
+                indexMult = list(zip(*[listaDatas,listaCons]))
+                index = pd.MultiIndex.from_tuples(indexMult, names=['Data', 'Consistência'])
+            elif count >= 17 and count < 17+dias:
+                if i != "":
+                    listaVazao.append(float(i.replace(",",".")))
                 else:
-                    vazoes.append(np.NaN)
+                    listaVazao.append(np.NaN)
+        dadosVazao.append(pd.Series(listaVazao, index=index))
         
-        dicVazoes[linha[2], linha[1]] = vazoes
-    return pd.Series(dicVazoes, index = dicVazoes.keys())
+    return pd.concat(dadosVazao)
 
 if __name__ == "__main__":
     caminho = os.getcwd()
-    print (type(trabaLinhas(lerTxt(caminho, "4933000"))))
+    s = (trabaLinhas(lerTxt(caminho, "4933000")))
