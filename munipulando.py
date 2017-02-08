@@ -9,15 +9,13 @@ Created on Mon Jan 30 15:46:00 2017
 import pandas
 import arquivoTxt as arq
 
-def nfalhas(dicVazoes):
-    falhas = {}
-    for i in dicVazoes:
+def manipDados(dadosVazao):
+    dadosVazao.sort_index(level='Data', inplace=True)
+    nFalhas = dadosVazao.isnull().sum()
+    s
+    return nFalhas
         
-            
-        print(dicVazoes[i])
-        
-
-caminho = caminho = os.getcwd()
-dicVazoes = arq.trabaLinhas(arq.lerTxt(caminho, "4933000"))
-
-nfalhas(dicVazoes)
+if __name__ == "__main__":
+    caminho = caminho = os.getcwd()
+    dadosVazao = arq.trabaLinhas(arq.lerTxt(caminho, "4933000"))
+    print(manipDados(dadosVazao))
