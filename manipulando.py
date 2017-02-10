@@ -8,11 +8,11 @@ Created on Mon Jan 30 15:46:00 2017
 
 import pandas
 import arquivoTxt as arq
+import os
 
 def manipDados(dadosVazao):
     dadosVazao.sort_index(level='Data', inplace=True)
     nFalhas = dadosVazao.isnull().sum()
-    s
     return nFalhas
         
 if __name__ == "__main__":
