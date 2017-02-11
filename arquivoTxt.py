@@ -25,38 +25,36 @@ def renomearTxt(caminho, listaTxt):
 
 
 def lerTxt(caminho, codigoArq):
-	listaLinhas = []
-	with open(os.path.join(caminho, codigoArq+".TXT"), encoding="Latin-1") as arquivo:
-		for linha in arquivo.readlines():
-			if linha != "\n" and linha[0] != "/":
-				listaLinhas.append(linha.split(";"))
-	return listaLinhas
+    listaLinhas = []
+    with open(os.path.join(caminho, codigoArq+".TXT"), encoding="Latin-1") as arquivo:
+        for linha in arquivo.readlines():
+            if linha[:3] != "// " and linha[:3] != "//-" and linha != "\n" and linha !="//\n":
+                listaLinhas.append(linha.strip("//").split(";"))
+    return listaLinhas
 
 
 def trabaLinhas(listaLinhas):
     dadosVazao = []
+    count = 0
     for linha in listaLinhas:
-        count = 0
-        listaVazao = []
-        for i in linha:
-            count += 1
-            if count == 3:
-                dia, mes, ano = (int(x) for x in i.split("/"))
-                dias = ca.monthrange(ano, mes)[1]
-                inicio = dt(ano, mes, dia)
-                fim = dt(ano, mes, dias)
-                listaDatas = pd.date_range(inicio, fim)
-                listaCons = [int(linha[1])]*dias
-                indexMult = list(zip(*[listaDatas,listaCons]))
-                index = pd.MultiIndex.from_tuples(indexMult, names=['Data', 'Consistência'])
-            elif count >= 17 and count < 17+dias:
-                if i != "":
-                    listaVazao.append(float(i.replace(",",".")))
-                else:
-                    listaVazao.append(np.NaN)
-        dadosVazao.append(pd.Series(listaVazao, index=index))
-        
+        count += 1
+        if count == 1:
+            inicioVa = linha.index("Vazao01")
+            indiceData = linha.index("Data")
+            indiceCons = linha.index("NivelConsistencia")
+        elif count >= 2:
+            data = pd.to_datetime(linha[indiceData], dayfirst=True)
+            dias = ca.monthrange(data.year, data.month)[1]
+            listaData = pd.date_range(data, periods=dias, freq="D")
+            listaCons = [int(linha[indiceCons])]*dias
+            indexMult = list(zip(*[listaData, listaCons]))
+            index = pd.MultiIndex.from_tuples(indexMult, names=["Data", "Consistencia"])
+            indiceVa = [i for i in range(inicioVa, inicioVa+dias)]
+            listaVazao = [np.NaN if linha[i] == "" else linha[i] for i in indiceVa]
+            dadosVazao.append(pd.Series(listaVazao, index=index))
+            
     return pd.concat(dadosVazao)
+
 
 if __name__ == "__main__":
     caminho = os.getcwd()

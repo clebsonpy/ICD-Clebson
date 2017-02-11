@@ -13,6 +13,7 @@ import os
 def manipDados(dadosVazao):
     dadosVazao.sort_index(level='Data', inplace=True)
     nFalhas = dadosVazao.isnull().sum()
+    
     return nFalhas
         
 if __name__ == "__main__":
