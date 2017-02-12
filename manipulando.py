@@ -6,7 +6,7 @@ Created on Mon Jan 30 15:46:00 2017
 @author: clebson
 """
 
-import pandas
+import pandas as pd
 import arquivoTxt as arq
 import os
 

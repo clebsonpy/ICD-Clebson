@@ -1,4 +1,5 @@
 import os
+import extraindoZip
 import collections
 import calendar as ca
 import pandas as pd
@@ -39,10 +40,12 @@ def trabaLinhas(listaLinhas):
     for linha in listaLinhas:
         count += 1
         if count == 1:
+            indiceCodigo = linha.index("EstacaoCodigo")
             inicioVa = linha.index("Vazao01")
             indiceData = linha.index("Data")
             indiceCons = linha.index("NivelConsistencia")
         elif count >= 2:
+            codigoEst = linha[indiceCodigo]
             data = pd.to_datetime(linha[indiceData], dayfirst=True)
             dias = ca.monthrange(data.year, data.month)[1]
             listaData = pd.date_range(data, periods=dias, freq="D")
@@ -50,7 +53,7 @@ def trabaLinhas(listaLinhas):
             indexMult = list(zip(*[listaData, listaCons]))
             index = pd.MultiIndex.from_tuples(indexMult, names=["Data", "Consistencia"])
             indiceVa = [i for i in range(inicioVa, inicioVa+dias)]
-            listaVazao = [np.NaN if linha[i] == "" else linha[i] for i in indiceVa]
+            listaVazao = [np.NaN if linha[i] == "" else float(linha[i].replace(",",".")) for i in indiceVa]
             dadosVazao.append(pd.Series(listaVazao, index=index))
             
     return pd.concat(dadosVazao)
@@ -58,4 +61,18 @@ def trabaLinhas(listaLinhas):
 
 if __name__ == "__main__":
     caminho = os.getcwd()
-    s = (trabaLinhas(lerTxt(caminho, "4933000")))
+    colunas = extraindoZip.listaArq(caminho)[1]
+    dadosV = pd.DataFrame(columns=colunas)
+    for i in colunas:
+        dadosV[i] = (trabaLinhas(lerTxt(caminho, i)))
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        

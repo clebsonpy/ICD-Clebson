@@ -1,14 +1,16 @@
 import zipfile, os
 import arquivoTxt as txt
 
-def listaZip(caminho):
-	listaDir = os.listdir(caminho)
-	listaArquivo = []
-	for arquivo in listaDir:
-		if os.path.isfile(os.path.join(caminho,arquivo)) and arquivo[-3:] == 'ZIP':
-			listaArquivo.append(arquivo)
-	
-	return listaArquivo
+def listaArq(caminho):
+    listaDir = os.listdir(caminho)
+    listaZip = []
+    listaTxt = []
+    for arquivo in listaDir:
+        if os.path.isfile(os.path.join(caminho, arquivo)) and arquivo[-3:] == 'ZIP':
+            listaZip.append(arquivo)
+        elif os.path.isfile(os.path.join(caminho, arquivo)) and arquivo[-3:] == 'TXT':
+            listaTxt.append(arquivo[:-4])
+    return listaZip, listaTxt
 
 def extraindoZip(caminho, listaZip):
 	for zip in listaZip:
@@ -17,6 +19,7 @@ def extraindoZip(caminho, listaZip):
 		txt.renomearTxt(caminho, txt.listaTxt(caminho))
 		print('Arquivo Extraido!')
 
-caminho = os.getcwd()
-extraindoZip(caminho, listaZip(caminho))
+if __name__ == "__main__":
+    caminho = os.getcwd()
+    extraindoZip(caminho, listaArq(caminho)[0])
 		
