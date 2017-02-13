@@ -13,6 +13,8 @@ import os
 def manipDados(dadosVazao):
     dadosVazao.sort_index(level='Data', inplace=True)
     nFalhas = dadosVazao.isnull().sum()
+    gant = dados.iloc[dados.index.isin([1], level=1)].isnull().resample('M', level='Data').sum()
+    gant2 = dados.iloc[dados.index.isin([2], level=1)].isnull().resample('M', level='Data').sum()
     
     return nFalhas
         

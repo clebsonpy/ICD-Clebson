@@ -34,38 +34,39 @@ def lerTxt(caminho, codigoArq):
     return listaLinhas
 
 
-def trabaLinhas(listaLinhas):
-    dadosVazao = []
-    count = 0
-    for linha in listaLinhas:
-        count += 1
-        if count == 1:
-            indiceCodigo = linha.index("EstacaoCodigo")
-            inicioVa = linha.index("Vazao01")
-            indiceData = linha.index("Data")
-            indiceCons = linha.index("NivelConsistencia")
-        elif count >= 2:
-            codigoEst = linha[indiceCodigo]
-            data = pd.to_datetime(linha[indiceData], dayfirst=True)
-            dias = ca.monthrange(data.year, data.month)[1]
-            listaData = pd.date_range(data, periods=dias, freq="D")
-            listaCons = [int(linha[indiceCons])]*dias
-            indexMult = list(zip(*[listaData, listaCons]))
-            index = pd.MultiIndex.from_tuples(indexMult, names=["Data", "Consistencia"])
-            indiceVa = [i for i in range(inicioVa, inicioVa+dias)]
-            listaVazao = [np.NaN if linha[i] == "" else float(linha[i].replace(",",".")) for i in indiceVa]
-            dadosVazao.append(pd.Series(listaVazao, index=index))
-            
-    return pd.concat(dadosVazao)
+def trabaLinhas(caminho):
+    colunas = extraindoZip.listaArq(caminho)[1]
+    dadosV = pd.DataFrame(columns=colunas)
+    for coluna in colunas:
+        listaLinhas = lerTxt(caminho, coluna)
+        dadosVazao = []
+        count = 0
+        for linha in listaLinhas:
+            count += 1
+            if count == 1:
+                indiceCodigo = linha.index("EstacaoCodigo")
+                inicioVa = linha.index("Vazao01")
+                indiceData = linha.index("Data")
+                indiceCons = linha.index("NivelConsistencia")
+            elif count >= 2:
+                codigoEst = linha[indiceCodigo]
+                data = pd.to_datetime(linha[indiceData], dayfirst=True)
+                dias = ca.monthrange(data.year, data.month)[1]
+                listaData = pd.date_range(data, periods=dias, freq="D")
+                listaCons = [int(linha[indiceCons])]*dias
+                indexMult = list(zip(*[listaData, listaCons]))
+                index = pd.MultiIndex.from_tuples(indexMult, names=["Data", "Consistencia"])
+                indiceVa = [i for i in range(inicioVa, inicioVa+dias)]
+                listaVazao = [np.NaN if linha[i] == "" else float(linha[i].replace(",",".")) for i in indiceVa]
+                dadosVazao.append(pd.Series(listaVazao, index=index))
+        dadosV[coluna] = pd.concat(dadosVazao)
+    
+    return dadosV
 
 
 if __name__ == "__main__":
     caminho = os.getcwd()
-    colunas = extraindoZip.listaArq(caminho)[1]
-    dadosV = pd.DataFrame(columns=colunas)
-    for i in colunas:
-        dadosV[i] = (trabaLinhas(lerTxt(caminho, i)))
-        
+    dados = trabaLinhas(caminho)
         
         
         
