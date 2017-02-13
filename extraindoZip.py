@@ -6,9 +6,9 @@ def listaArq(caminho):
     listaZip = []
     listaTxt = []
     for arquivo in listaDir:
-        if os.path.isfile(os.path.join(caminho, arquivo)) and arquivo[-3:] == 'ZIP':
+        if os.path.isfile(os.path.join(caminho, arquivo)) and arquivo[-3:].upper() == 'ZIP':
             listaZip.append(arquivo)
-        elif os.path.isfile(os.path.join(caminho, arquivo)) and arquivo[-3:] == 'TXT':
+        elif os.path.isfile(os.path.join(caminho, arquivo)) and arquivo[-3:].upper() == 'TXT':
             listaTxt.append(arquivo[:-4])
     return listaZip, listaTxt
 
@@ -22,4 +22,4 @@ def extraindoZip(caminho, listaZip):
 if __name__ == "__main__":
     caminho = os.getcwd()
     extraindoZip(caminho, listaArq(caminho)[0])
-		
+

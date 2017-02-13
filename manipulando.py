@@ -13,12 +13,12 @@ import os
 def manipDados(dadosVazao):
     dadosVazao.sort_index(level='Data', inplace=True)
     nFalhas = dadosVazao.isnull().sum()
-    gant = dados.iloc[dados.index.isin([1], level=1)].isnull().resample('M', level='Data').sum()
-    gant2 = dados.iloc[dados.index.isin([2], level=1)].isnull().resample('M', level='Data').sum()
-    
+    gantt = dados.iloc[dados.index.isin([1], level=1)].isnull().resample('M', level='Data').sum()
+    gantt2 = dados.iloc[dados.index.isin([2], level=1)].isnull().resample('M', level='Data').sum()
+
     return nFalhas
-        
+
 if __name__ == "__main__":
     caminho = caminho = os.getcwd()
-    dadosVazao = arq.trabaLinhas(arq.lerTxt(caminho, "4933000"))
+    dadosVazao = arq.trabaLinhas(caminho)
     print(manipDados(dadosVazao))
