@@ -13,10 +13,12 @@ import os
 def manipDados(dadosVazao):
     dadosVazao.sort_index(level='Data', inplace=True)
     nFalhas = dadosVazao.isnull().sum()
-    gantt = dados.iloc[dados.index.isin([1], level=1)].isnull().resample('M', level='Data').sum()
-    gantt2 = dados.iloc[dados.index.isin([2], level=1)].isnull().resample('M', level='Data').sum()
+    dadosConsistido = dadosVazao.iloc[dadosVazao.index.isin([1], level=1)]
+    dadosBruto = dadosVazao.iloc[dadosVazao.index.isin([2], level=1)]
+    ganttConsistido = dadosConsistido.isnull().resample('AUG-M', level='Data').sum()
+    ganttBruto = dadosBruto.isnull().resample('AUG-M', level='Data').sum()
 
-    return nFalhas
+    return nFalhas, ganttConsistido, ganttBruto
 
 if __name__ == "__main__":
     caminho = caminho = os.getcwd()
