@@ -67,6 +67,7 @@ def trabaLinhas(caminho):
 if __name__ == "__main__":
     caminho = os.getcwd()
     dados = trabaLinhas(caminho)
+    print(dados)
 
 
 
