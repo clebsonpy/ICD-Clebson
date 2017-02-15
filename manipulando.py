@@ -10,13 +10,16 @@ import pandas as pd
 import arquivoTxt as arq
 import os
 
+
 def manipDados(dadosVazao):
     dadosVazao.sort_index(level='Data', inplace=True)
     nFalhas = dadosVazao.isnull().sum()
     dadosConsistido = dadosVazao.iloc[dadosVazao.index.isin([1], level=1)]
+    dadosConsistido.reset_index(level=1, drop=True, inplace=True)
     dadosBruto = dadosVazao.iloc[dadosVazao.index.isin([2], level=1)]
-    ganttConsistido = dadosConsistido.isnull().resample('AUG-M', level='Data').sum()
-    ganttBruto = dadosBruto.isnull().resample('AUG-M', level='Data').sum()
+    dadosBruto.reset_index(level=1, drop=True, inplace=True)
+    ganttConsistido = dadosConsistido.isnull().resample('M').sum()
+    ganttBruto = dadosBruto.isnull().resample('M').sum()
 
     return nFalhas, ganttConsistido, ganttBruto
 
