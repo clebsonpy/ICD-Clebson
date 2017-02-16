@@ -34,8 +34,8 @@ def lerTxt(caminho, codigoArq):
 
 
 def trabaLinhas(caminho):
-    colunas = extraindoZip.listaArq(caminho)[1]
-    dadosV = pd.DataFrame(columns=colunas)
+    colunas = ['49330000', '49370000']#extraindoZip.listaArq(caminho)[1]
+    dadosV = {}
     for coluna in colunas:
         listaLinhas = lerTxt(caminho, coluna)
         dadosVazao = []
@@ -58,7 +58,7 @@ def trabaLinhas(caminho):
                 indiceVa = [i for i in range(inicioVa, inicioVa+dias)]
                 listaVazao = [np.NaN if linha[i] == "" else float(linha[i].replace(",",".")) for i in indiceVa]
                 dadosVazao.append(pd.Series(listaVazao, index=index))
-
+        print(len(pd.concat(dadosVazao)))
         dadosV[coluna] = pd.concat(dadosVazao)
 
     return dadosV
@@ -67,6 +67,7 @@ def trabaLinhas(caminho):
 if __name__ == "__main__":
     caminho = os.getcwd()
     dados = trabaLinhas(caminho)
+    dadox = pd.DataFrame(dados)
     print(dados)
 
 
