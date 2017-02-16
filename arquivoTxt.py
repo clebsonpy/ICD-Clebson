@@ -60,7 +60,7 @@ def trabaLinhas(caminho):
                 listaVazao = [np.NaN if linha[i] == "" else float(linha[i].replace(",",".")) for i in indiceVa]
                 dadosVazao.append(pd.Series(listaVazao, index=index))
                 
-        dadosV[coluna] = pd.concat(dadosVazao)
+        dadosV[coluna] = pd.concat(dadosVazao,ignore_index=True)
         
 
     return dadosV
