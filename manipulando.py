@@ -26,4 +26,4 @@ def manipDados(dadosVazao):
 if __name__ == "__main__":
     caminho = caminho = os.getcwd()
     dadosVazao = arq.trabaLinhas(caminho)
-    print(manipDados(dadosVazao))
+    mani = manipDados(dadosVazao)
