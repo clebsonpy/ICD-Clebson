@@ -13,11 +13,11 @@ def listaArq(caminho):
     return listaZip, listaTxt
 
 def extraindoZip(caminho, listaZip):
-	for zip in listaZip:
-		with zipfile.ZipFile(os.path.join(caminho,zip)) as arquivo:
-			arquivo.extractall(caminho)
-		txt.renomearTxt(caminho, txt.listaTxt(caminho))
-		print('Arquivo Extraido!')
+    for zipNome in listaZip:
+        with zipfile.ZipFile(os.path.join(caminho,zipNome)) as arquivo:
+            arquivo.extractall(caminho)
+        txt.renomearTxt(caminho, txt.listaTxt(caminho))
+        print('Arquivo Extraido!')
 
 if __name__ == "__main__":
     caminho = os.getcwd()

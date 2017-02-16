@@ -14,13 +14,14 @@ def listaTxt(caminho):
 
 
 def renomearTxt(caminho, listaTxt):
-	for txt in listaTxt:
-		if txt[:-4] == "VAZOES":
-			with open(os.path.join(caminho, txt), encoding="Latin-1") as arquivo:
-				for linha in arquivo.readlines():
-					if linha.split(":")[0] == "//   Código da Estação":
-						nome = linha.split(":")[1][1:-1]
-						os.rename(txt, nome+".TXT")
+    for txt in listaTxt:
+        if txt[:-4] == "VAZOES":
+            with open(os.path.join(caminho, txt), encoding="Latin-1") as arquivo:
+                for linha in arquivo.readlines():
+                    if linha.split(":")[0] == "//   Código da Estação":
+                        nome = linha.split(":")[1][1:-1]
+                        print(nome)
+                        os.rename(txt, nome+".TXT")
 
 
 def lerTxt(caminho, codigoArq):
