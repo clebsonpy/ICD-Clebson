@@ -18,12 +18,14 @@ def manipDados(dadosVazao):
     dadosConsistido.reset_index(level=1, drop=True, inplace=True)
     dadosBruto = dadosVazao.iloc[dadosVazao.index.isin([2], level=1)]
     dadosBruto.reset_index(level=1, drop=True, inplace=True)
-    ganttConsistido = dadosConsistido.isnull().resample('M').sum()
-    ganttBruto = dadosBruto.isnull().resample('M').sum()
+    ganttConsistido = dadosConsistido.isnull().groupby(pd.Grouper(freq = 'M')).sum().to_period()
+    ganttBruto = dadosBruto.isnull().groupby(pd.Grouper(freq = 'M')).sum().to_period()
+    grupoBruto = dadosBruto.groupby(pd.Grouper(freq = 'A-AUG'))
 
     return nFalhas, ganttConsistido, ganttBruto
 
 if __name__ == "__main__":
     caminho = caminho = os.getcwd()
     dadosVazao = arq.trabaLinhas(caminho)
-    mani = manipDados(dadosVazao)
+    mani = manipDados(dadosVazao)[2]
+    print(mani)

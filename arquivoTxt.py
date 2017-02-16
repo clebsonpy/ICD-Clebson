@@ -59,7 +59,7 @@ def trabaLinhas(caminho):
                 dadosVazao.append(pd.Series(listaVazao, index=index))
  
         dadosV[coluna] = pd.concat(dadosVazao)
-                
+
     return dadosV
 
 
