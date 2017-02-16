@@ -1,10 +1,8 @@
 import os
 import extraindoZip
-import collections
 import calendar as ca
 import pandas as pd
 import numpy as np
-from datetime import datetime as dt
 
 def listaTxt(caminho):
 	listaDir = os.listdir(caminho)
@@ -21,7 +19,7 @@ def renomearTxt(caminho, listaTxt):
 			with open(os.path.join(caminho, txt), encoding="Latin-1") as arquivo:
 				for linha in arquivo.readlines():
 					if linha.split(":")[0] == "//   Código da Estação":
-						nome = linha.split(":")[1][1:-2]
+						nome = linha.split(":")[1][1:-1]
 						os.rename(txt, nome+".TXT")
 
 
@@ -49,7 +47,7 @@ def trabaLinhas(caminho):
                 indiceData = linha.index("Data")
                 indiceCons = linha.index("NivelConsistencia")
             elif count >= 2:
-                codigoEst = linha[indiceCodigo]
+                #codigoEst = linha[indiceCodigo]
                 data = pd.to_datetime(linha[indiceData], dayfirst=True)
                 dias = ca.monthrange(data.year, data.month)[1]
                 listaData = pd.date_range(data, periods=dias, freq="D")
@@ -59,10 +57,9 @@ def trabaLinhas(caminho):
                 indiceVa = [i for i in range(inicioVa, inicioVa+dias)]
                 listaVazao = [np.NaN if linha[i] == "" else float(linha[i].replace(",",".")) for i in indiceVa]
                 dadosVazao.append(pd.Series(listaVazao, index=index))
+ 
+        dadosV[coluna] = pd.concat(dadosVazao)
                 
-        dadosV[coluna] = pd.concat(dadosVazao,ignore_index=True)
-        
-
     return dadosV
 
 
