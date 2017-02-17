@@ -33,17 +33,37 @@ def lerTxt(caminho, codigoArq):
     return listaLinhas
 
 
+def multIndex(data, dias, consistencia):
+    if data.day == 1:
+        dias = dias
+    else:
+        dias = dias - data.day
+    
+    listaData = pd.date_range(data, periods=dias, freq="D")
+    listaCons = [int(consistencia)]*dias
+    indexMult = list(zip(*[listaData, listaCons]))
+    return pd.MultiIndex.from_tuples(indexMult, names=["Data", "Consistencia"])
+
+
+def combinaDateFrame(dataframe1, dataframe2):
+    if len(dataframe1) > 0:
+        dataframe1 = dataframe1.combine_first(dataframe2)
+    else:
+        dataframe1 = dataframe2
+    return dataframe1
+        
 def trabaLinhas(caminho):
-    colunas = [ '44300000', '49330000', '49370000']#extraindoZip.listaArq(caminho)[1]
+    colunas = extraindoZip.listaArq(caminho)[1]
     dadosV = pd.DataFrame()
     for coluna in colunas:
+        print('Arquivo: ', coluna)
         listaLinhas = lerTxt(caminho, coluna)
         dadosVazao = []
         count = 0
         for linha in listaLinhas:
             count += 1
             if count == 1:
-                indiceCodigo = linha.index("EstacaoCodigo")
+                #indiceCodigo = linha.index("EstacaoCodigo")
                 inicioVa = linha.index("Vazao01")
                 indiceData = linha.index("Data")
                 indiceCons = linha.index("NivelConsistencia")
@@ -51,20 +71,14 @@ def trabaLinhas(caminho):
                 #codigoEst = linha[indiceCodigo]
                 data = pd.to_datetime(linha[indiceData], dayfirst=True)
                 dias = ca.monthrange(data.year, data.month)[1]
-                listaData = pd.date_range(data, periods=dias, freq="D")
-                listaCons = [int(linha[indiceCons])]*dias
-                indexMult = list(zip(*[listaData, listaCons]))
-                index = pd.MultiIndex.from_tuples(indexMult, names=["Data", "Consistencia"])
+                consistencia = linha[indiceCons]
+                index = multIndex(data, dias, consistencia)
                 indiceVa = [i for i in range(inicioVa, inicioVa+dias)]
                 listaVazao = [np.NaN if linha[i] == "" else float(linha[i].replace(",",".")) for i in indiceVa]
                 dadosVazao.append(pd.Series(listaVazao, index=index, name=coluna))
         
         dados = pd.DataFrame(pd.concat(dadosVazao))
-        if len(dadosV) > 0:
-            print('estou aqui', coluna)
-            dadosV = dadosV.combine_first(dados)
-        else:
-            dadosV = dados
+        dadosV = combinaDateFrame(dadosV, dados)
 
     return dadosV
 

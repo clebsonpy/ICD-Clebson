@@ -19,7 +19,7 @@ def manipDados(dadosVazao):
     dadosBruto = dadosVazao.iloc[dadosVazao.index.isin([2], level=1)]
     dadosBruto.reset_index(level=1, drop=True, inplace=True)
     ganttConsistido = dadosConsistido.isnull().groupby(pd.Grouper(freq = 'M')).sum().to_period()
-    ganttBruto = dadosBruto.isnull().groupby(pd.Grouper(freq = 'M')).sum().to_period()
+    ganttBruto = dadosBruto.isnull().groupby(pd.Grouper(freq = 'M')).sum()
     grupoBruto = dadosBruto.groupby(pd.Grouper(freq = 'A-AUG'))
 
     return nFalhas, ganttConsistido, ganttBruto
