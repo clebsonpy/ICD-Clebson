@@ -12,28 +12,28 @@ import os
 import calendar
 
 
-def grupoAnoHidro(dados, mesHidro, nPosto, graf=False):
+def grupoAnoHidro(dados, mesHidro, nPosto = None):
     dias = calendar.monthrange(2000, mesHidro-1)[1]
     mes = {1:'JAN', 2:'FEB', 3:'MAR', 4:'APR', 5:'MAY', 6:'JUN', 7:'JUL', 8:'AUG', 9:'SEP', 10:'OCT', 11:'NOV', 12:'DEC'}
     grupo = dados.groupby(pd.Grouper(freq='A-%s' % mes[mesHidro]))
-    frame = pd.DataFrame(index=pd.date_range(pd.to_datetime('1999/%s/1' % mesHidro), pd.to_datetime('2000/%s/%s' % (mesHidro-1, dias))))
-    for dado in grupo:
-        index = []
-        for data in dado[1].index:
-            if data.month > (mesHidro-1):
-                ano = 1999
-            else:
-                ano = 2000
-            index.append(pd.to_datetime('%s/%s/%s' % (ano, data.month, data.day)))
-    
-        aux = dado[1][nPosto].rename(dado[0].year)
-        frameAux = pd.DataFrame(aux)
-        frameAux.set_index(pd.Index(index), inplace=True)
-        frame = arq.combinaDateFrame(frame, frameAux)
-    if graf:
-        frame.plot()
+    if nPosto != None:
+        frame = pd.DataFrame(index=pd.date_range(pd.to_datetime('1999/%s/1' % mesHidro), pd.to_datetime('2000/%s/%s' % (mesHidro-1, dias))))
+        for dado in grupo:
+            index = []
+            for data in dado[1].index:
+                if data.month > (mesHidro-1):
+                    ano = 1999
+                else:
+                    ano = 2000
+                index.append(pd.to_datetime('%s/%s/%s' % (ano, data.month, data.day)))
         
-    return grupo
+            aux = dado[1][nPosto].rename(dado[0].year)
+            frameAux = pd.DataFrame(aux)
+            frameAux.set_index(pd.Index(index), inplace=True)
+            frame = arq.combinaDateFrame(frame, frameAux)
+        frame.plot(legend=False)
+        
+    return grupo, frame
 
 
 
@@ -61,7 +61,7 @@ def manipDados(dadosVazao):
 
 if __name__ == "__main__":
     caminho = caminho = os.getcwd()
-    dadosVazao = separaDadosConsisBruto(arq.trabaLinhas(caminho), tipo=2,lev=1)
+    dadosVazao = separaDadosConsisBruto(arq.trabaLinhas(caminho), tipo=1,lev=1)
     mes = mesInicioAnoHidrologico(dadosVazao)
     print(mes)
-    grupo = grupoAnoHidro(dadosVazao, mes, '49330000',graf=True)
+    grupo = grupoAnoHidro(dadosVazao, mes, nPosto='49330000')
