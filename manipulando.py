@@ -48,7 +48,6 @@ def maximaAnual(grupos, nPosto):
     for grupo in grupos:
         vazaoMax.append(grupo[1].max())
         dataMax.append(grupo[1].idxmax())
-        print(dataMax)
     maxAnualSeie =  pd.Series(vazaoMax, dataMax, name=nPosto)
     maxAnual = pd.DataFrame(maxAnualSeie)
     
@@ -70,7 +69,7 @@ def separaDadosConsisBruto(dados, tipo, lev):
     return dadosSeparado
 
 
-def manipDados(dadosVazao):
+def falhas(dadosVazao):
     dadosVazao.sort_index(inplace=True)
     nFalhas = dadosVazao.isnull().sum()
     gantt = dadosVazao.isnull().groupby(pd.Grouper(freq = 'M')).sum().to_period()
@@ -80,9 +79,10 @@ def manipDados(dadosVazao):
 if __name__ == "__main__":
     caminho = caminho = os.getcwd()
     dadosVazao = separaDadosConsisBruto(arq.trabaLinhas(caminho), tipo=2,lev=1)
+    gantt = falhas(dadosVazao)
     mes = mesInicioAnoHidrologico(dadosVazao)
     print(mes)
-    grupos = grupoAnoHidro(dadosVazao, mes, nPosto='49330000')
-    maxAnual = maximaAnual(grupos, nPosto='49330000')
+    grupos = grupoAnoHidro(dadosVazao, mes, nPosto='49330000',grafico=True)
+    #maxAnual = maximaAnual(grupos, nPosto='49330000')
     
     
