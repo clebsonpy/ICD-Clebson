@@ -20,7 +20,7 @@ def grupoAnoHidro(dados, mesHidro, nPosto = None, grafico = False):
         grupo = dados[nPosto].groupby(pd.Grouper(freq='A-%s' % mes[mesHidro]))
     else:
         grupo = dados.groupby(pd.Grouper(freq='A-%s' % mes[mesHidro]))
-        
+
     if grafico and nPosto != None:
         frame = pd.DataFrame(index=pd.date_range(pd.to_datetime('1999/%s/1' % mesHidro), pd.to_datetime('2000/%s/%s' % (mesHidro-1, dias))))
         for dado in grupo:
@@ -31,28 +31,28 @@ def grupoAnoHidro(dados, mesHidro, nPosto = None, grafico = False):
                 else:
                     ano = 2000
                 index.append(pd.to_datetime('%s/%s/%s' % (ano, data.month, data.day)))
-        
+
             aux = dado[1].rename(dado[0].year)
             frameAux = pd.DataFrame(aux)
             frameAux.set_index(pd.Index(index), inplace=True)
             frame = arq.combinaDateFrame(frame, frameAux)
         frame.plot(legend=False)
         return grupo, frame
-        
+
     return grupo
 
 
 def maximaAnual(grupos, nPosto):
     vazaoMax = []
     dataMax = []
-    for grupo in grupos:
-        vazaoMax.append(grupo[1].max())
-        dataMax.append(grupo[1].idxmax())
+    for data, dado in grupos:
+        vazaoMax.append(dado.max())
+        dataMax.append(dado.idxmax())
     maxAnualSeie =  pd.Series(vazaoMax, dataMax, name=nPosto)
     maxAnual = pd.DataFrame(maxAnualSeie)
-    
-    return maxAnual    
-    
+
+    return maxAnual
+
 
 def mesInicioAnoHidrologico(dados):
     grupoMesAno = dados.groupby(pd.Grouper(freq='M')).mean().to_period()
@@ -84,5 +84,4 @@ if __name__ == "__main__":
     print(mes)
     grupos = grupoAnoHidro(dadosVazao, mes, nPosto='49330000',grafico=True)
     #maxAnual = maximaAnual(grupos, nPosto='49330000')
-    
-    
+
