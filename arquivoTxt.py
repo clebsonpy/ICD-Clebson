@@ -38,7 +38,7 @@ def multIndex(data, dias, consistencia):
         dias = dias
     else:
         dias = dias - data.day
-    
+
     listaData = pd.date_range(data, periods=dias, freq="D")
     listaCons = [int(consistencia)]*dias
     indexMult = list(zip(*[listaData, listaCons]))
@@ -51,7 +51,7 @@ def combinaDateFrame(dataframe1, dataframe2):
     else:
         dataframe1 = dataframe2
     return dataframe1
-        
+
 def trabaLinhas(caminho):
     colunas = extraindoZip.listaArq(caminho)[1]
     dadosV = pd.DataFrame()
@@ -76,7 +76,7 @@ def trabaLinhas(caminho):
                 indiceVa = [i for i in range(inicioVa, inicioVa+dias)]
                 listaVazao = [np.NaN if linha[i] == "" else float(linha[i].replace(",",".")) for i in indiceVa]
                 dadosVazao.append(pd.Series(listaVazao, index=index, name=coluna))
-        
+
         dados = pd.DataFrame(pd.concat(dadosVazao))
         dadosV = combinaDateFrame(dadosV, dados)
 
@@ -88,12 +88,3 @@ if __name__ == "__main__":
     dados = trabaLinhas(caminho)
 #    dadox = pd.DataFrame.add(dados)
 #    print(dados)
-
-
-
-
-
-
-
-
-

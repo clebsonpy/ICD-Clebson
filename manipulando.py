@@ -9,7 +9,7 @@ Created on Mon Jan 30 15:46:00 2017
 import pandas as pd
 import arquivoTxt as arq
 import os
-import calendar
+#import calendar
 
 
 
@@ -47,13 +47,13 @@ def preparaSerieGrafico(dados, nPosto):
     mesHidro = mesInicioAnoHidrologico(dadosVazao, nPosto)
     mes = {1:'JAN', 2:'FEB', 3:'MAR', 4:'APR', 5:'MAY', 6:'JUN', 7:'JUL', 8:'AUG', 9:'SEP', 10:'OCT', 11:'NOV', 12:'DEC'}
     grupos = dados[nPosto].groupby(pd.Grouper(freq='A-%s' % mes[mesHidro]))
-    keysG = [i[0] for i in grupos] 
+    keysG = [i[0] for i in grupos]
     frame = pd.DataFrame()
     for key, dado in grupos:
         if key.year != keysG[0].year and key.year != keysG[-1].year:
             aux = dado.values
             index = dado.index
-            
+
             indexMult = list(zip(*[index.month, index.day]))
             indexN = pd.MultiIndex.from_tuples(indexMult, names=["Mes", "Dia"])
             serie = pd.Series(aux, index=indexN, name=key.year)
@@ -62,8 +62,8 @@ def preparaSerieGrafico(dados, nPosto):
             frame = arq.combinaDateFrame(frame, frameAux)
 
     return frame
-        
-        
+
+
 def maximaAnual(grupos, nPosto):
     vazaoMax = []
     dataMax = []
@@ -101,8 +101,9 @@ def falhas(dadosVazao):
 if __name__ == "__main__":
     caminho = caminho = os.getcwd()
     dadosVazao = separaDadosConsisBruto(arq.trabaLinhas(caminho), tipo=1,lev=1)
-    gantt = falhas(dadosVazao)
-    df = preparaSerieGrafico(dadosVazao, '49330000')
+    #gantt = falhas(dadosVazao)
+    mesInicioAnoHidrologico(dadosVazao, '49330000')
+    #df = preparaSerieGrafico(dadosVazao, '49330000')
     #grupos = grupoAnoHidro(dadosVazao, mes, nPosto='49330000',grafico=True)
     #maxAnual = maximaAnual(grupos, nPosto='49330000')
 
