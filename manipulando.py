@@ -43,26 +43,23 @@ import os
 #
 #    return grupo
 
-def preparaSerieGrafico(dados, nPosto):
+def preparaGrupoSerie(dados, nPosto):
     mesHidro = mesInicioAnoHidrologico(dadosVazao, nPosto)
     mes = {1:'JAN', 2:'FEB', 3:'MAR', 4:'APR', 5:'MAY', 6:'JUN', 7:'JUL', 8:'AUG', 9:'SEP', 10:'OCT', 11:'NOV', 12:'DEC'}
     grupos = dados[nPosto].groupby(pd.Grouper(freq='A-%s' % mes[mesHidro]))
     keysG = [i[0] for i in grupos]
-    frame = pd.DataFrame()
+    frameGrafico = pd.DataFrame()
     for key, dado in grupos:
         if key.year != keysG[0].year and key.year != keysG[-1].year:
             aux = dado.values
             index = dado.index
-
             indexMult = list(zip(*[index.month, index.day]))
             indexN = pd.MultiIndex.from_tuples(indexMult, names=["Mes", "Dia"])
             serie = pd.Series(aux, index=indexN, name=key.year)
             frameAux = pd.DataFrame(serie)
-            #frameAux.set_index(pd.Index(indexN), inplace=True)
-            frame = arq.combinaDateFrame(frame, frameAux)
-    
-    frame.drop_duplicates(keep='last', inplace=True)
-    return frame
+            frameGrafico = arq.combinaDateFrame(frameGrafico, frameAux)
+    frameGrafico.drop_duplicates(keep='last', inplace=True)
+    return grupos, frameGrafico
 
 
 def maximaAnual(grupos, nPosto):
@@ -73,7 +70,6 @@ def maximaAnual(grupos, nPosto):
         dataMax.append(dado.idxmax())
     maxAnualSeie =  pd.Series(vazaoMax, dataMax, name=nPosto)
     maxAnual = pd.DataFrame(maxAnualSeie)
-
     return maxAnual
 
 
@@ -95,16 +91,22 @@ def separaDadosConsisBruto(dados, tipo, lev):
 def falhas(dadosVazao):
     dadosVazao.sort_index(inplace=True)
     nFalhas = dadosVazao.isnull().sum()
-    gantt = dadosVazao.isnull().groupby(pd.Grouper(freq = 'M')).sum().to_period()
-
-    return nFalhas, gantt
+    gantt = dadosVazao.isnull().groupby(pd.Grouper(freq = 'M')).sum()
+    data = []
+    for i in gantt.isnull().values:
+        if i.all():
+            print(i)
+            break
+            if i:
+                data.append(i.index)
+    return nFalhas, gantt, data
 
 if __name__ == "__main__":
     caminho = caminho = os.getcwd()
-    dadosVazao = separaDadosConsisBruto(arq.trabaLinhas(caminho), tipo=1,lev=1)
-    #gantt = falhas(dadosVazao)
+    dadosVazao = separaDadosConsisBruto(arq.trabaLinhas(caminho), tipo=2,lev=1)
+    falhas, gantt, index = falhas(dadosVazao)
     #mesInicioAnoHidrologico(dadosVazao, '49330000')
-    df = preparaSerieGrafico(dadosVazao, '49330000')
+    #rupos, fg = preparaGrupoSerie(dadosVazao, '49330000')
     #grupos = grupoAnoHidro(dadosVazao, mes, nPosto='49330000',grafico=True)
     #maxAnual = maximaAnual(grupos, nPosto='49330000')
 
