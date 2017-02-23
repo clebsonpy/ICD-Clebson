@@ -60,7 +60,8 @@ def preparaSerieGrafico(dados, nPosto):
             frameAux = pd.DataFrame(serie)
             #frameAux.set_index(pd.Index(indexN), inplace=True)
             frame = arq.combinaDateFrame(frame, frameAux)
-
+    
+    frame.drop_duplicates(keep='last', inplace=True)
     return frame
 
 
@@ -102,8 +103,8 @@ if __name__ == "__main__":
     caminho = caminho = os.getcwd()
     dadosVazao = separaDadosConsisBruto(arq.trabaLinhas(caminho), tipo=1,lev=1)
     #gantt = falhas(dadosVazao)
-    mesInicioAnoHidrologico(dadosVazao, '49330000')
-    #df = preparaSerieGrafico(dadosVazao, '49330000')
+    #mesInicioAnoHidrologico(dadosVazao, '49330000')
+    df = preparaSerieGrafico(dadosVazao, '49330000')
     #grupos = grupoAnoHidro(dadosVazao, mes, nPosto='49330000',grafico=True)
     #maxAnual = maximaAnual(grupos, nPosto='49330000')
 
