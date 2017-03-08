@@ -13,34 +13,6 @@ import calendar as cal
 
 #plotly
 #Cufflinks
-#def grupoAnoHidro(dados, nPosto = None, grafico = False):
-#    mesHidro = mesInicioAnoHidrologico(dadosVazao, nPosto)
-#    dias = calendar.monthrange(2000, mesHidro-1)[1]
-#    mes = {1:'JAN', 2:'FEB', 3:'MAR', 4:'APR', 5:'MAY', 6:'JUN', 7:'JUL', 8:'AUG', 9:'SEP', 10:'OCT', 11:'NOV', 12:'DEC'}
-#    if nPosto != None:
-#        grupo = dados[nPosto].groupby(pd.Grouper(freq='A-%s' % mes[mesHidro]))
-#    else:
-#        grupo = dados.groupby(pd.Grouper(freq='A-%s' % mes[mesHidro]))
-#
-#    if grafico and nPosto != None:
-#        frame = pd.DataFrame(index=pd.date_range(pd.to_datetime('1999/%s/1' % mesHidro), pd.to_datetime('2000/%s/%s' % (mesHidro-1, dias))))
-#        for dado in grupo:
-#            index = []
-#            for data in dado[1].index:
-#                if data.month > (mesHidro-1):
-#                    ano = 1999
-#                else:
-#                    ano = 2000
-#                index.append(pd.to_datetime('%s/%s/%s' % (ano, data.month, data.day)))
-#
-#            aux = dado[1].rename(dado[0].year)
-#            frameAux = pd.DataFrame(aux)
-#            frameAux.set_index(pd.Index(index), inplace=True)
-#            frame = arq.combinaDateFrame(frame, frameAux)
-#        frame.plot(legend=False)
-#        return grupo, frame
-#
-#    return grupo
 
 def preparaGrupoSerie(dados, nPosto, mesHidro):
     grupos = dados[nPosto].groupby(pd.Grouper(freq='A-%s' % mesHidro[1]))
@@ -60,17 +32,21 @@ def preparaGrupoSerie(dados, nPosto, mesHidro):
 
 def periodoSemFalhas(gantt, nPosto):
     aux = []
-    listaData = []
+    listaInicio = []
+    listaFim = []
     for i in gantt[nPosto].index:
         if gantt[nPosto].loc[i] == 0:
             aux.append(i)
         else:
             if len(aux) > 2:
-                listaData.append([aux[0], aux[-1]])
+                listaInicio.append(aux[0])
+                listaFim.append(aux[-1])
             aux = []
 
-    listaData.append([aux[0], aux[-1]])
-    return listaData
+    listaInicio.append(aux[0]
+    listaFim.append(aux[-1])
+    dic = {'Inicio': listaInicio, 'Fim': listaFim}
+    return pd.DataFrame(dic)
 
 def maximaAnual(grupos, nPosto):
     vazaoMax = []
@@ -110,7 +86,7 @@ def falhas(dadosVazao):
     return nFalhas, gantt
 
 if __name__ == "__main__":
-    caminho = caminho = os.getcwd()
+    caminho = os.getcwd()
     dadosVazao = separaDadosConsisBruto(arq.trabaLinhas(caminho), tipo=2,lev=1)
     falhas, gantt = falhas(dadosVazao)
     listaData = periodoSemFalhas(gantt, nPosto = '49330000')
