@@ -43,7 +43,7 @@ def periodoSemFalhas(gantt, nPosto):
                 listaFim.append(aux[-1])
             aux = []
 
-    listaInicio.append(aux[0]
+    listaInicio.append(aux[0])
     listaFim.append(aux[-1])
     dic = {'Inicio': listaInicio, 'Fim': listaFim}
     return pd.DataFrame(dic)
@@ -83,13 +83,14 @@ def falhas(dadosVazao):
     for i in gantt.index:
         if gantt.loc[i].isnull().all():
             gantt.set_value(index = i, col = gantt.axes[1], value = i.day)
-    return nFalhas, gantt
+    
+    return nFalhas, gantt.to_period()
 
 if __name__ == "__main__":
     caminho = os.getcwd()
     dadosVazao = separaDadosConsisBruto(arq.trabaLinhas(caminho), tipo=2,lev=1)
     falhas, gantt = falhas(dadosVazao)
-    listaData = periodoSemFalhas(gantt, nPosto = '49330000')
+    periodoSemFalhas = periodoSemFalhas(gantt, nPosto = '49330000')
     #mesHidro = mesInicioAnoHidrologico(dadosVazao, '49330000')
     #grupos, fg = preparaGrupoSerie(dadosVazao, '49330000')
     #grupos = grupoAnoHidro(dadosVazao, nPosto='49330000', mesHidro = mesHidro, grafico=True)
