@@ -11,6 +11,8 @@ import arquivoTxt as arq
 import os
 import calendar as cal
 
+#plotly
+#Cufflinks
 #def grupoAnoHidro(dados, nPosto = None, grafico = False):
 #    mesHidro = mesInicioAnoHidrologico(dadosVazao, nPosto)
 #    dias = calendar.monthrange(2000, mesHidro-1)[1]
@@ -66,10 +68,10 @@ def periodoSemFalhas(gantt, nPosto):
             if len(aux) > 2:
                 listaData.append([aux[0], aux[-1]])
             aux = []
-            
-    listaData.append([aux[0], aux[-1]])        
+
+    listaData.append([aux[0], aux[-1]])
     return listaData
-    
+
 def maximaAnual(grupos, nPosto):
     vazaoMax = []
     dataMax = []
