@@ -30,21 +30,36 @@ def preparaGrupoSerie(dados, nPosto, mesHidro):
     frameGrafico.drop_duplicates(keep='last', inplace=True)
     return grupos, frameGrafico
 
-def periodoSemFalhas(gantt, nPosto):
+def dataFrameGantt(aux):
+    df = pd.DataFrame(columns=['Task', 'Start', 'Finish', 'Description', 'IndexCol'])
+    cont = 0
+    for i in aux:
+        psf = aux[i]
+        for j in psf.index:
+            df.set_value(index = cont, col = 'Task', value = i)
+            df.set_value(index = cont, col = 'Description', value = i + ' - %s' % j)
+            df.set_value(index = cont, col = 'IndexCol', value = i)
+            df.set_value(index = cont, col = 'Start', value = psf['Inicio'].loc[j])
+            df.set_value(index = cont, col = 'Finish', value = psf['Fim'].loc[j])
+            cont += 1
+    
+    return df
+    
+def periodoSemFalhas(ganttBool, nPosto):
     aux = []
     listaInicio = []
     listaFim = []
-    for i in gantt[nPosto].index:
-        if gantt[nPosto].loc[i] == 0:
+    for i in ganttBool[nPosto].index:
+        if ~ganttBool[nPosto].loc[i]:
             aux.append(i)
-        else:
-            if len(aux) > 2:
-                listaInicio.append(aux[0])
-                listaFim.append(aux[-1])
+        elif len(aux) > 2 and ganttBool[nPosto].loc[i]:
+            listaInicio.append(aux[0])
+            listaFim.append(aux[-1])
             aux = []
-
-    listaInicio.append(aux[0])
-    listaFim.append(aux[-1])
+            
+    if len(aux) > 0:
+        listaInicio.append(aux[0])
+        listaFim.append(aux[-1])
     dic = {'Inicio': listaInicio, 'Fim': listaFim}
     return pd.DataFrame(dic)
 
@@ -79,18 +94,24 @@ def separaDadosConsisBruto(dados, tipo, lev):
 def falhas(dadosVazao):
     dadosVazao.sort_index(inplace=True)
     nFalhas = dadosVazao.isnull().sum()
-    gantt = dadosVazao.isnull().groupby(pd.Grouper(freq = 'M')).sum()
-    for i in gantt.index:
-        if gantt.loc[i].isnull().all():
-            gantt.set_value(index = i, col = gantt.axes[1], value = i.day)
+    ganttSoma = dadosVazao.isnull().groupby(pd.Grouper(freq = 'M')).sum()
+    ganttBool = dadosVazao.isnull()
+    for i in ganttSoma.index:
+        if ganttSoma.loc[i].isnull().all():
+            ganttSoma.set_value(index = i, col = ganttSoma.axes[1], value = i.day)
     
-    return nFalhas, gantt.to_period()
+    return nFalhas, ganttBool, ganttSoma.to_period()
 
 if __name__ == "__main__":
     caminho = os.getcwd()
-    dadosVazao = separaDadosConsisBruto(arq.trabaLinhas(caminho), tipo=2,lev=1)
-    falhas, gantt = falhas(dadosVazao)
-    periodoSemFalhas = periodoSemFalhas(gantt, nPosto = '49330000')
+    dadosVazao = separaDadosConsisBruto(arq.trabaLinhas(caminho), tipo=1,lev=1)
+    falhas, ganttBool, ganttSoma = falhas(dadosVazao)
+    aux = {}
+    listaText = arq.listaTxt(caminho)
+    for i in listaText:
+        aux[i] = periodoSemFalhas(ganttBool, nPosto = i)
+        
+    dfgantt = dataFrameGantt(aux)
     #mesHidro = mesInicioAnoHidrologico(dadosVazao, '49330000')
     #grupos, fg = preparaGrupoSerie(dadosVazao, '49330000')
     #grupos = grupoAnoHidro(dadosVazao, nPosto='49330000', mesHidro = mesHidro, grafico=True)

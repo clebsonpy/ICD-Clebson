@@ -9,19 +9,19 @@ def listaTxt(caminho):
 	listaArquivo = []
 	for arquivo in listaDir:
 		if os.path.isfile(os.path.join(caminho,arquivo)) and arquivo[-3:] == 'TXT':
-				listaArquivo.append(arquivo)
+				listaArquivo.append(arquivo[:-4])
 	return listaArquivo
 
 
 def renomearTxt(caminho, listaTxt):
     for txt in listaTxt:
-        if txt[:-4] == "VAZOES":
-            with open(os.path.join(caminho, txt), encoding="Latin-1") as arquivo:
+        if txt == "VAZOES":
+            with open(os.path.join(caminho, txt+'.TXT'), encoding="Latin-1") as arquivo:
                 for linha in arquivo.readlines():
                     if linha.split(":")[0] == "//   Código da Estação":
                         nome = linha.split(":")[1][1:-1]
                         print(nome)
-                        os.rename(txt, nome+".TXT")
+                        os.rename(txt+'.TXT', nome+".TXT")
 
 
 def lerTxt(caminho, codigoArq):
