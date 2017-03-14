@@ -33,15 +33,19 @@ def preparaGrupoSerie(dados, nPosto, mesHidro):
 def dataFrameGantt(aux):
     df = pd.DataFrame(columns=['Task', 'Start', 'Finish', 'Description', 'IndexCol'])
     cont = 0
+    color = 0
+    n = 1
     for i in aux:
         psf = aux[i]
         for j in psf.index:
             df.set_value(index = cont, col = 'Task', value = i)
             df.set_value(index = cont, col = 'Description', value = i + ' - %s' % j)
-            df.set_value(index = cont, col = 'IndexCol', value = i)
+            df.set_value(index = cont, col = 'IndexCol', value = color)
             df.set_value(index = cont, col = 'Start', value = psf['Inicio'].loc[j])
             df.set_value(index = cont, col = 'Finish', value = psf['Fim'].loc[j])
             cont += 1
+            color += (100*n)
+            n *= -1
     
     return df
     
@@ -102,16 +106,30 @@ def falhas(dadosVazao):
     
     return nFalhas, ganttBool, ganttSoma.to_period()
 
+def plotlyCredenciais(username, apiKey):
+    import plotly.tools as tls
+    tls.set_credentials_file(username=username, api_key= apiKey)
+    tls.set_config_file(world_readable=True, sharing='public')
+
+def plotGantt(dfGantt, filename):
+    import plotly.figure_factory as FF
+    import plotly.offline as off
+    fig = FF.create_gantt(dfGantt, index_col='IndexCol', colors = ['#000000', '#858585'], group_tasks=True, bar_width=0.475)
+    off.plot(fig, filename=filename)
+    
 if __name__ == "__main__":
     caminho = os.getcwd()
-    dadosVazao = separaDadosConsisBruto(arq.trabaLinhas(caminho), tipo=1,lev=1)
+    dadosVazao = separaDadosConsisBruto(arq.trabaLinhas(caminho), tipo=2,lev=1)
     falhas, ganttBool, ganttSoma = falhas(dadosVazao)
     aux = {}
+    ganttBool.drop_duplicates(keep='last', inplace=True)
     listaText = arq.listaTxt(caminho)
     for i in listaText:
         aux[i] = periodoSemFalhas(ganttBool, nPosto = i)
         
-    dfgantt = dataFrameGantt(aux)
+    dfGantt = dataFrameGantt(aux)
+    plotlyCredenciais(username='clebsonpy', apiKey='Dtk2N7biK0BjJZHEJ5uf')
+    plotGantt(dfGantt, filename='ganttChart')
     #mesHidro = mesInicioAnoHidrologico(dadosVazao, '49330000')
     #grupos, fg = preparaGrupoSerie(dadosVazao, '49330000')
     #grupos = grupoAnoHidro(dadosVazao, nPosto='49330000', mesHidro = mesHidro, grafico=True)
