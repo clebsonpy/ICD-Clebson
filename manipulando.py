@@ -40,15 +40,16 @@ def dataFrameGantt(aux):
         for j in psf.index:
             df.set_value(index = cont, col = 'Task', value = i)
             df.set_value(index = cont, col = 'Description', value = i + ' - %s' % j)
-            df.set_value(index = cont, col = 'IndexCol', value = color)
+            df.set_value(index = cont, col = '
+            Col', value = color)
             df.set_value(index = cont, col = 'Start', value = psf['Inicio'].loc[j])
             df.set_value(index = cont, col = 'Finish', value = psf['Fim'].loc[j])
             cont += 1
             color += (100*n)
             n *= -1
-    
+
     return df
-    
+
 def periodoSemFalhas(ganttBool, nPosto):
     aux = []
     listaInicio = []
@@ -60,7 +61,7 @@ def periodoSemFalhas(ganttBool, nPosto):
             listaInicio.append(aux[0])
             listaFim.append(aux[-1])
             aux = []
-            
+
     if len(aux) > 0:
         listaInicio.append(aux[0])
         listaFim.append(aux[-1])
@@ -103,7 +104,7 @@ def falhas(dadosVazao):
     for i in ganttSoma.index:
         if ganttSoma.loc[i].isnull().all():
             ganttSoma.set_value(index = i, col = ganttSoma.axes[1], value = i.day)
-    
+
     return nFalhas, ganttBool, ganttSoma.to_period()
 
 def plotlyCredenciais(username, apiKey):
@@ -116,7 +117,7 @@ def plotGantt(dfGantt, filename):
     import plotly.offline as off
     fig = FF.create_gantt(dfGantt, index_col='IndexCol', colors = ['#000000', '#858585'], group_tasks=True, bar_width=0.475)
     off.plot(fig, filename=filename)
-    
+
 if __name__ == "__main__":
     caminho = os.getcwd()
     dadosVazao = separaDadosConsisBruto(arq.trabaLinhas(caminho), tipo=2,lev=1)
@@ -126,9 +127,9 @@ if __name__ == "__main__":
     listaText = arq.listaTxt(caminho)
     for i in listaText:
         aux[i] = periodoSemFalhas(ganttBool, nPosto = i)
-        
+
     dfGantt = dataFrameGantt(aux)
-    plotlyCredenciais(username='clebsonpy', apiKey='Dtk2N7biK0BjJZHEJ5uf')
+    #plotlyCredenciais(username='clebsonpy', apiKey='Dtk2N7biK0BjJZHEJ5uf')
     plotGantt(dfGantt, filename='ganttChart')
     #mesHidro = mesInicioAnoHidrologico(dadosVazao, '49330000')
     #grupos, fg = preparaGrupoSerie(dadosVazao, '49330000')
