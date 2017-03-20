@@ -1,5 +1,5 @@
 import zipfile, os
-import arquivoTxt as txt
+import lerArquivo as arq
 
 def listaArq(caminho):
     listaDir = os.listdir(caminho)

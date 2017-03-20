@@ -7,7 +7,7 @@ Created on Mon Jan 30 15:46:00 2017
 """
 
 import pandas as pd
-import arquivoTxt as arq
+import lerArquivo as arq
 import os
 import calendar as cal
 
