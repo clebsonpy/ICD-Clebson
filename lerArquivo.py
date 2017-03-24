@@ -10,7 +10,7 @@ def listaArq(caminho, tipo):
         if os.path.isfile(os.path.join(caminho, arquivo)):
             nome, ext = arquivo.split('.')
             if ext == tipo:
-                listaArquivo.append(nome+'.'+ext)
+                listaArquivo.append(nome)
     return listaArquivo
 
 
@@ -27,7 +27,7 @@ def renomearTxt(caminho, listaTxt):
 
 def lerTxt(caminho, nomeArquivo):
     listaLinhas = []
-    with open(os.path.join(caminho, nomeArquivo+".TXT"), encoding="Latin-1") as arquivo:
+    with open(os.path.join(caminho, nomeArquivo+'.TXT'), encoding="Latin-1") as arquivo:
         for linha in arquivo.readlines():
             if linha[:3] != "// " and linha[:3] != "//-" and linha != "\n" and linha !="//\n":
                 listaLinhas.append(linha.strip("//").split(";"))

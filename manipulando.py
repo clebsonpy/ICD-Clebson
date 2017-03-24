@@ -10,7 +10,9 @@ import pandas as pd
 import lerArquivo as arq
 import os
 import calendar as cal
-
+import plotly.tools as tls
+import plotly.figure_factory as FF
+import plotly.offline as off
 #plotly
 #Cufflinks
 
@@ -40,8 +42,7 @@ def dataFrameGantt(aux):
         for j in psf.index:
             df.set_value(index = cont, col = 'Task', value = i)
             df.set_value(index = cont, col = 'Description', value = i + ' - %s' % j)
-            df.set_value(index = cont, col = '
-            Col', value = color)
+            df.set_value(index = cont, col = 'Col', value = color)
             df.set_value(index = cont, col = 'Start', value = psf['Inicio'].loc[j])
             df.set_value(index = cont, col = 'Finish', value = psf['Fim'].loc[j])
             cont += 1
@@ -108,13 +109,12 @@ def falhas(dadosVazao):
     return nFalhas, ganttBool, ganttSoma.to_period()
 
 def plotlyCredenciais(username, apiKey):
-    import plotly.tools as tls
+    
     tls.set_credentials_file(username=username, api_key= apiKey)
     tls.set_config_file(world_readable=True, sharing='public')
 
 def plotGantt(dfGantt, filename):
-    import plotly.figure_factory as FF
-    import plotly.offline as off
+    
     fig = FF.create_gantt(dfGantt, index_col='IndexCol', colors = ['#000000', '#858585'], group_tasks=True, bar_width=0.475)
     off.plot(fig, filename=filename)
 
@@ -124,7 +124,7 @@ if __name__ == "__main__":
     falhas, ganttBool, ganttSoma = falhas(dadosVazao)
     aux = {}
     ganttBool.drop_duplicates(keep='last', inplace=True)
-    listaText = arq.listaTxt(caminho)
+    listaText = arq.listaArq(caminho, 'TXT')
     for i in listaText:
         aux[i] = periodoSemFalhas(ganttBool, nPosto = i)
 
