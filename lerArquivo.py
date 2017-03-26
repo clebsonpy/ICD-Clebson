@@ -84,10 +84,20 @@ def trabaLinhas(caminho):
     return dadosV
 
 def lerXlsx(caminho, nomeArquivo, planilha):
-    arq = os.path.join(caminho, nomeArquivo[0])
-    dadosV = pd.read_excel(arq, shettname=planilha, header=None, skiprows=7, index_col=0)
+    arq = os.path.join(caminho, nomeArquivo[0]+'.xls')
+    dadosV = pd.read_excel(arq, shettname=planilha, header=0, skiprows=5, index_col=0)
+    dadosV.drop(np.NaN, inplace=True)
+    aux = []
+    dic = {'jan':'1', 'fev':'2', 'mar':'3', 'abr':'4', 'mai':'5', 'jun':'6', 'jul':'7', 'ago':'8', 'set':'9', 'out':'10', 'nov':'11', 'dez':'12'}
+    for i in dadosV.index:
+        aux.append(i.replace(i[-8:-5], dic[i[-8:-5]]))
+    
+    dadosV.index = pd.to_datetime(aux, dayfirst=True)
+    codiColuna = [i.split(' ')[-1][1:-1] for i in dadosV.axes[1]]
+    dadosV.columns = codiColuna
     
     return dadosV
+
 if __name__ == "__main__":
     caminho = os.getcwd()
     nomeArquivo = listaArq(caminho, 'xls')

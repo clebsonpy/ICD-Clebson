@@ -12,7 +12,7 @@ import os
 import calendar as cal
 import plotly.tools as tls
 import plotly.figure_factory as FF
-import plotly.offline as off
+import plotly.offline as py
 #plotly
 #Cufflinks
 
@@ -35,9 +35,9 @@ def preparaGrupoSerie(dados, nPosto, mesHidro):
 def dataFrameGantt(aux):
     df = pd.DataFrame(columns=['Task', 'Start', 'Finish', 'Description', 'IndexCol'])
     cont = 0
-    color = 0
-    n = 1
     for i in aux:
+        color = 0
+        n = 1
         psf = aux[i]
         for j in psf.index:
             df.set_value(index = cont, col = 'Task', value = i)
@@ -109,30 +109,29 @@ def falhas(dadosVazao):
     return nFalhas, ganttBool, ganttSoma.to_period()
 
 def plotlyCredenciais(username, apiKey):
-    
     tls.set_credentials_file(username=username, api_key= apiKey)
     tls.set_config_file(world_readable=True, sharing='public')
 
 def plotGantt(dfGantt, filename):
-    
-    fig = FF.create_gantt(dfGantt, index_col='IndexCol', colors = ['#000000', '#858585'], group_tasks=True, bar_width=0.475)
-    off.plot(fig, filename=filename)
+    fig = FF.create_gantt(dfGantt, colors = ['#000000', '#858585'], group_tasks=True, bar_width=0.475)
+    py.plot(fig, filename=filename)
 
 if __name__ == "__main__":
     caminho = os.getcwd()
-    dadosVazao = separaDadosConsisBruto(arq.trabaLinhas(caminho), tipo=2,lev=1)
+    nomeArquivo = arq.listaArq(caminho, 'xls')
+    #dadosVazao = separaDadosConsisBruto(arq.trabaLinhas(caminho), tipo=2,lev=1)
+    dadosVazao = arq.lerXlsx(caminho, nomeArquivo, 'Total')
     falhas, ganttBool, ganttSoma = falhas(dadosVazao)
     aux = {}
     ganttBool.drop_duplicates(keep='last', inplace=True)
-    listaText = arq.listaArq(caminho, 'TXT')
-    for i in listaText:
+    #listaText = arq.listaArq(caminho, 'xls')
+    for i in dadosVazao:
         aux[i] = periodoSemFalhas(ganttBool, nPosto = i)
 
     dfGantt = dataFrameGantt(aux)
     #plotlyCredenciais(username='clebsonpy', apiKey='Dtk2N7biK0BjJZHEJ5uf')
     plotGantt(dfGantt, filename='ganttChart')
     #mesHidro = mesInicioAnoHidrologico(dadosVazao, '49330000')
-    #grupos, fg = preparaGrupoSerie(dadosVazao, '49330000')
-    #grupos = grupoAnoHidro(dadosVazao, nPosto='49330000', mesHidro = mesHidro, grafico=True)
+    #grupos, fg = preparaGrupoSerie(dadosVazao, '49330000', mesHidro)
     #maxAnual = maximaAnual(grupos, nPosto='49330000')
 
