@@ -5,7 +5,7 @@ Created on Mon Jan 30 15:46:00 2017
 
 @author: clebson
 """
-
+import timeit
 import pandas as pd
 import lerArquivo as arq
 import os
@@ -102,6 +102,8 @@ def falhas(dadosVazao):
     nFalhas = dadosVazao.isnull().sum()
     ganttSoma = dadosVazao.isnull().groupby(pd.Grouper(freq = 'M')).sum()
     ganttBool = dadosVazao.isnull()
+    #nomeIndex = getattr(dadosVazao.index, 'names', getattr(dadosVazao.index, 'name', 'index'))[0]
+    #ganttBool = ganttBool.reset_index().drop_duplicates(subset=nomeIndex, keep='last').set_index(nomeIndex)
     for i in ganttSoma.index:
         if ganttSoma.loc[i].isnull().all():
             ganttSoma.set_value(index = i, col = ganttSoma.axes[1], value = i.day)
@@ -117,21 +119,24 @@ def plotGantt(dfGantt, filename):
     py.plot(fig, filename=filename)
 
 if __name__ == "__main__":
+    ini = timeit.default_timer()
     caminho = os.getcwd()
     nomeArquivo = arq.listaArq(caminho, 'xls')
     #dadosVazao = separaDadosConsisBruto(arq.trabaLinhas(caminho), tipo=2,lev=1)
     dadosVazao = arq.lerXlsx(caminho, nomeArquivo, 'Total')
     falhas, ganttBool, ganttSoma = falhas(dadosVazao)
-    aux = {}
-    ganttBool.drop_duplicates(keep='last', inplace=True)
+    
+    #aux = {}
     #listaText = arq.listaArq(caminho, 'xls')
-    for i in dadosVazao:
-        aux[i] = periodoSemFalhas(ganttBool, nPosto = i)
+    #for i in dadosVazao:
+    #    aux[i] = periodoSemFalhas(ganttBool, nPosto = i)
 
-    dfGantt = dataFrameGantt(aux)
+    #dfGantt = dataFrameGantt(aux)
     #plotlyCredenciais(username='clebsonpy', apiKey='Dtk2N7biK0BjJZHEJ5uf')
-    plotGantt(dfGantt, filename='ganttChart')
-    #mesHidro = mesInicioAnoHidrologico(dadosVazao, '49330000')
+    #plotGantt(dfGantt, filename='ganttChart')
+    mesHidro = mesInicioAnoHidrologico(dadosVazao, '178')
     #grupos, fg = preparaGrupoSerie(dadosVazao, '49330000', mesHidro)
-    #maxAnual = maximaAnual(grupos, nPosto='49330000')
+    #maxAnual = maximaAnual(grupos, nPosto='49330000')0
+    fim = timeit.default_timer()
+    print('Duração: %s' % (fim-ini))
 

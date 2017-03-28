@@ -96,11 +96,9 @@ def lerXlsx(caminho, nomeArquivo, planilha):
     codiColuna = [i.split(' ')[-1][1:-1] for i in dadosV.axes[1]]
     dadosV.columns = codiColuna
     
-    return dadosV
+    return dadosV.astype(float)
 
 if __name__ == "__main__":
     caminho = os.getcwd()
     nomeArquivo = listaArq(caminho, 'xls')
     dados = lerXlsx(caminho, nomeArquivo, 'Total')
-#    dadox = pd.DataFrame.add(dados)
-#    print(dados)
